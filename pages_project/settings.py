@@ -11,22 +11,25 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 import os
 from pathlib import Path
+import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Initialize environment variables
+env = environ.Env()
+environ.Env.read_env()
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-kcr(_(s6zsdm)0kmm7v9rntxomjiv05@l4uk&n^k-jn!k05!ou'
+SECRET_KEY = env('SECRET_KEY')  # Use environment variable for SECRET_KEY
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env.bool('DEBUG', default=False)  # Use environment variable for DEBUG
 
-ALLOWED_HOSTS = ['*'] #new
-
+ALLOWED_HOSTS = ['your-app-name.up.railway.app', 'localhost']  # Replace with your Railway app name
 
 # Application definition
 
@@ -37,13 +40,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'pages.apps.PagesConfig', #new 
+    'pages.apps.PagesConfig',  # Your app
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # Add Whitenoise here
-    # other middleware
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # Whitenoise middleware
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -57,7 +59,7 @@ ROOT_URLCONF = 'pages_project.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')], #new
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],  # Template directory
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -72,21 +74,14 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'pages_project.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': env.db()  # Use environment variable for database configuration
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -102,53 +97,27 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
-
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
+STATIC_URL = '/static/'  # Make sure to include the leading slash
 
-STATIC_URL = 'static/'
-
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles') #new
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # Directory for collected static files
 
 # Media files (User uploads)
-MEDIA_URL = '/media/' #new
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media') #new
+MEDIA_URL = '/media/'  # URL for media files
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # Directory for uploaded media files
 
-# If you have additional static file directories
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'pages', 'static'),  # Replace with your app name
-    # Add more directories if needed
-]
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
-import environ
-env = environ.Env()
-environ.Env.read_env()
-
-# Security settings
-SECRET_KEY = env('SECRET_KEY')
-DEBUG = env.bool('DEBUG', default=False)
-
-DATABASES = {
-    'default': env.db()
-}
-
-
+# Static files storage
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-#new
