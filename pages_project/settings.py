@@ -42,6 +42,8 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # Add Whitenoise here
+    # other middleware
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -118,7 +120,35 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles') #new
+
+# Media files (User uploads)
+MEDIA_URL = '/media/' #new
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media') #new
+
+# If you have additional static file directories
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'pages', 'static'),  # Replace with your app name
+    # Add more directories if needed
+]
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+import environ
+env = environ.Env()
+environ.Env.read_env()
+
+# Security settings
+SECRET_KEY = env('SECRET_KEY')
+DEBUG = env.bool('DEBUG', default=False)
+
+DATABASES = {
+    'default': env.db()
+}
+
+
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+#new
